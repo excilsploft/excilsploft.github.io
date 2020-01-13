@@ -1,8 +1,38 @@
 <html>
 	<head>
 	<title>A Site Test for Github IO</title>
+
+	<script type="text/javascript">
+		 function loadJSON(callback) {
+
+			var xobj = new XMLHttpRequest();
+			xobj.overrideMimeType("application/json");
+			xobj.open('GET', 'data.json', true); // Replace 'my_data' with the path to your file
+			xobj.onreadystatechange = function () {
+				  if (xobj.readyState == 4 && xobj.status == "200") {
+					// Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
+					callback(xobj.responseText);
+				  }
+			};
+			xobj.send(null);
+		 }
+
+		function addEl () {
+			loadJSON(function(response) {
+				var aj = JSON.parse(response);
+				var eldata= document.getElementById("data");
+				aj_data  = aj['data'];
+				for(d in aj_data) {
+					nd = document.createElement("div");
+					nd.innerHTML=d;
+					eldata.appendChild(nd);
+				}	
+			});
+		}
+	</script>
 	</head>
-	<body>
-		<div class="main"><p>This is the test page</p></div>
+	<body onload="addEl()">
+		<div id="main"><p>Data</p></div>
+		<div id="data"></div>
 	</body>
 </html>
