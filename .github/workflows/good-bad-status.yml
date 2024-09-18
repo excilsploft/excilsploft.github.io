@@ -34,7 +34,7 @@ jobs:
 
       - name: another check
         run: |
-          ls -la ./
+          test -f ${{ env.GOOD_JSON }} && cat ${{ env.GOOD_JSON }} || echo "no ${{ env.GOOD_JSON }}"
 
       - name: check good status
         shell: bash
