@@ -9,8 +9,8 @@ on:
   workflow_dispatch:
 
 env:
-  GOOD_URL: http://137.184.230.115:9797/good/
-  BAD_URL: http://137.184.230.115:9797/bad/
+  GOOD_URL: http://137.184.230.115:9797/good
+  BAD_URL: http://137.184.230.115:9797/bad
   LOG_JSON: log.json
   GOOD_JSON: good.json
   BAD_JSON: bad.json
