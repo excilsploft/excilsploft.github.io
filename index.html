@@ -3,7 +3,29 @@
 	<title>A Site Test for Github IO</title>
 
 	<script type="text/javascript">
-		 function loadJSON(callback) {
+    function generateTableHead(table, data) {
+      let thead = table.createTHead();
+      let row = thead.insertRow();
+      for (let key of data) {
+        let th = document.createElement("th");
+        let text = document.createTextNode(key);
+        th.appendChild(text);
+        row.appendChild(th);
+      }
+    }
+
+    function generateTable(table, data) {
+      for (let element of data) {
+        let row = table.insertRow();
+        for (key in element) {
+          let cell = row.insertCell();
+          let text = document.createTextNode(element[key]);
+          cell.appendChild(text);
+        }
+      }
+    }
+
+		function loadJSON(callback) {
 
 			var xobj = new XMLHttpRequest();
 			xobj.overrideMimeType("application/json");
@@ -15,24 +37,24 @@
 				  }
 			};
 			xobj.send(null);
-		 }
+		}
 
 		function addEl () {
 			loadJSON(function(response) {
 				var aj = JSON.parse(response);
-				var eldata= document.getElementById("data");
-				aj_data  = aj['logs'];
-				for(d in aj_data) {
-					nd = document.createElement("div");
-					nd.innerHTML=d['status_code'];
-					eldata.appendChild(nd);
-				}	
+		    var table = document.querySelector("table";)
+				var data = aj['logs'];
+        let table = document.querySelector("table");
+        let data = Object.keys(data[0]);
+        generateTableHead(table, data);
+        generateTable(table, data);
 			});
 		}
 	</script>
 	</head>
 	<body onload="addEl()">
 		<div id="main"><p>Data</p></div>
-		<div id="data"></div>
+    <table>
+    </table>
 	</body>
 </html>
