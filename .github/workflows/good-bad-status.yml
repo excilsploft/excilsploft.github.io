@@ -44,7 +44,7 @@ jobs:
             echo "${{ env.GOOD_URL }} got 200"
             if [[ -f ${{ env.GOOD_JSON }} ]]
             then
-              cat ${{ env.GOOD_JSON }} | jq --argjson $(cat) js '.logs += [$js]' ${{ env.LOG_JSON }} > ${{ env.TMP_JSON }} && mv ${{ env.TMP_JSON }} ${{ env.LOG_JSON }}
+              cat ${{ env.GOOD_JSON }} | jq --argjson js "$(cat)" '.logs += [$js]' ${{ env.LOG_JSON }} > ${{ env.TMP_JSON }} && mv ${{ env.TMP_JSON }} ${{ env.LOG_JSON }}
             fi
           fi
 
@@ -56,13 +56,13 @@ jobs:
             echo "${{ env.BAD_URL }} got 200"
             if [[ -f ${{ env.BAD_JSON }} ]]
             then
-              cat ${{ env.BAD_JSON }} | jq --argjson $(cat) js '.logs += [$js]' ${{ env.LOG_JSON }} > ${{ env.TMP_JSON }} && mv ${{ env.TMP_JSON }} ${{ env.LOG_JSON }}
+              cat ${{ env.BAD_JSON }} | jq --argjson js "$(cat)" '.logs += [$js]' ${{ env.LOG_JSON }} > ${{ env.TMP_JSON }} && mv ${{ env.TMP_JSON }} ${{ env.LOG_JSON }}
             fi
           else
             echo "${{ env.BAD_URL }} did not get 200"
             if [[ -f ${{ env.BAD_JSON }} ]]
             then
-              cat ${{ env.BAD_JSON }} | jq --argjson $(cat) js '.logs += [$js]' ${{ env.LOG_JSON }} > ${{ env.TMP_JSON }} && mv ${{ env.TMP_JSON }} ${{ env.LOG_JSON }}
+              cat ${{ env.BAD_JSON }} | jq --argjson js "$(cat)" '.logs += [$js]' ${{ env.LOG_JSON }} > ${{ env.TMP_JSON }} && mv ${{ env.TMP_JSON }} ${{ env.LOG_JSON }}
             fi
           fi
 
