@@ -1,1 +1,14 @@
-{"logs": [] }
+{
+  "logs": [
+    {
+      "endpoint": "/good",
+      "message": "All Good",
+      "statuscode": 200
+    },
+    {
+      "endpoint": "/bad",
+      "message": "Service Error",
+      "statuscode": 500
+    }
+  ]
+}
