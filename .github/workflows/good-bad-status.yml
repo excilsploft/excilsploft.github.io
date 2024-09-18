@@ -28,6 +28,14 @@ jobs:
         run: |
           test -f ${{ env.LOG_JSON }} || echo '{"logs": [] }' | tee -a ${{ env.LOG_JSON }}
 
+      - name: sanity check
+        run: |
+          curl -sk -o ${{ env.GOOD_JSON }} -w "%{http_code}" ${{ env.GOOD_URL }}
+
+      - name: another check
+        run: |
+          ls -la ./
+
       - name: check good status
         shell: bash
         run: |
