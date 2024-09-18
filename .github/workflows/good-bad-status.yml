@@ -27,7 +27,7 @@ jobs:
           test -f ${{ env.LOG_JSON }} || echo '{"logs": [] }' | tee -a ${{ env.LOG_JSON }}
 
       - name: check good status
-        shell: /bin/bash
+        shell: bash
         run: |
           if $(curl -sk -w -o ${{ env.GOOD_JSON }} "%{http_code}"  http://137.184.230.115/good/) -eq 200
           then
@@ -38,7 +38,7 @@ jobs:
           fi
 
       - name: check bad status
-        shell: /bin/bash
+        shell: bash
         run: |
           if $(curl -sk -w -o ${{ env.BAD_JSON }} "%{http_code}"  http://137.184.230.115/bad/) -eq 200
           then
