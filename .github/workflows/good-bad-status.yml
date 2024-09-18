@@ -1,0 +1,57 @@
+---
+name: Good Bad Status
+on:
+  push:
+    branches:
+      - service-check
+  schedule: 
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+env:
+  LOG_JSON: log.json
+  GOOD_JSON: good.json
+  BAD_JSON: bad.json
+  TMP_JSON: tmp.json
+
+
+jobs:
+  good-bad-status:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: setup log
+        run: |
+          test -f ${{ env.LOG_JSON }} || echo '{"logs": [] }' | tee -a ${{ env.LOG_JSON }}
+
+      - name: check good status
+        shell: /bin/bash
+        run: |
+          if $(curl -sk -w -o ${{ env.GOOD_JSON }} "%{http_code}"  http://137.184.230.115/good/) -eq 200
+          then
+            if [[ -f ${{ env.GOOD_JSON }} ]]
+            then
+              cat ${{ env.GOOD_JSON }} | jq --argjson $(cat) js '.logs += [$js]' ${{ env.LOG_JSON }} > ${{ env.TMP_JSON }} && mv ${{ env.TMP_JSON }} ${{ env.LOG_JSON }}
+            fi
+          fi
+
+      - name: check bad status
+        shell: /bin/bash
+        run: |
+          if $(curl -sk -w -o ${{ env.BAD_JSON }} "%{http_code}"  http://137.184.230.115/bad/) -eq 200
+          then
+            if [[ -f ${{ env.BAD_JSON }} ]]
+            then
+              cat ${{ env.BAD_JSON }} | jq --argjson $(cat) js '.logs += [$js]' ${{ env.LOG_JSON }} > ${{ env.TMP_JSON }} && mv ${{ env.TMP_JSON }} ${{ env.LOG_JSON }}
+            fi
+          fi
+
+      - name: commit
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          branch: service-check
+          file_pattern: ./${{ env.LOG_JSON }}
+          commit_message: autocommit of scheduled run
+

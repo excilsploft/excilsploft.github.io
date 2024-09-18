@@ -7,7 +7,7 @@
 
 			var xobj = new XMLHttpRequest();
 			xobj.overrideMimeType("application/json");
-			xobj.open('GET', 'data.json', true); // Replace 'my_data' with the path to your file
+			xobj.open('GET', 'log.json', true); // Replace 'my_data' with the path to your file
 			xobj.onreadystatechange = function () {
 				  if (xobj.readyState == 4 && xobj.status == "200") {
 					// Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
@@ -21,10 +21,10 @@
 			loadJSON(function(response) {
 				var aj = JSON.parse(response);
 				var eldata= document.getElementById("data");
-				aj_data  = aj['data'];
+				aj_data  = aj['logs'];
 				for(d in aj_data) {
 					nd = document.createElement("div");
-					nd.innerHTML=d;
+					nd.innerHTML=d['status_code'];
 					eldata.appendChild(nd);
 				}	
 			});
