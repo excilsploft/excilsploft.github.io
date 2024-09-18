@@ -1,0 +1,75 @@
+---
+name: Good Bad Status
+on:
+  push:
+    branches:
+      - master
+  schedule: 
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+env:
+  GOOD_URL: http://137.184.230.115:9797/good
+  BAD_URL: http://137.184.230.115:9797/bad
+  LOG_JSON: log.json
+  GOOD_JSON: good.json
+  BAD_JSON: bad.json
+  TMP_JSON: tmp.json
+
+
+jobs:
+  good-bad-status:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: setup log
+        run: |
+          test -f ${{ env.LOG_JSON }} || echo '{"logs": [] }' | tee -a ${{ env.LOG_JSON }}
+
+      - name: sanity check
+        run: |
+          curl -sk -o ${{ env.GOOD_JSON }} -w "%{http_code}" ${{ env.GOOD_URL }}
+
+      - name: another check
+        run: |
+          test -f ${{ env.GOOD_JSON }} && cat ${{ env.GOOD_JSON }} || echo "no ${{ env.GOOD_JSON }}"
+
+      - name: check good status
+        shell: bash
+        run: |
+          if [[ $(curl -sk -o ${{ env.GOOD_JSON }} -w "%{http_code}" ${{ env.GOOD_URL }}) -eq 200 ]]
+          then
+            echo "${{ env.GOOD_URL }} got 200"
+            if [[ -f ${{ env.GOOD_JSON }} ]]
+            then
+              cat ${{ env.GOOD_JSON }} | jq --argjson js "$(cat)" '.logs += [$js]' ${{ env.LOG_JSON }} > ${{ env.TMP_JSON }} && mv ${{ env.TMP_JSON }} ${{ env.LOG_JSON }}
+            fi
+          fi
+
+      - name: check bad status
+        shell: bash
+        run: |
+          if [[ $(curl -sk -o ${{ env.BAD_JSON }} -w "%{http_code}" ${{ env.BAD_URL}} ) -eq 200 ]]
+          then
+            echo "${{ env.BAD_URL }} got 200"
+            if [[ -f ${{ env.BAD_JSON }} ]]
+            then
+              cat ${{ env.BAD_JSON }} | jq --argjson js "$(cat)" '.logs += [$js]' ${{ env.LOG_JSON }} > ${{ env.TMP_JSON }} && mv ${{ env.TMP_JSON }} ${{ env.LOG_JSON }}
+            fi
+          else
+            echo "${{ env.BAD_URL }} did not get 200"
+            if [[ -f ${{ env.BAD_JSON }} ]]
+            then
+              cat ${{ env.BAD_JSON }} | jq --argjson js "$(cat)" '.logs += [$js]' ${{ env.LOG_JSON }} > ${{ env.TMP_JSON }} && mv ${{ env.TMP_JSON }} ${{ env.LOG_JSON }}
+            fi
+          fi
+
+      - name: commit
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          branch: master
+          file_pattern: ./${{ env.LOG_JSON }}
+          commit_message: autocommit of scheduled run
+
